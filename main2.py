@@ -2,6 +2,7 @@
 import sys
 import application
 
+
 def main(args):
     app = application.Application(args)
     app.execute()

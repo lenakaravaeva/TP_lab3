@@ -9,6 +9,7 @@ END_OF_LINE = "\n"
 TEXT_STATE_DISABLED = "disabled"
 TEXT_STATE_NORMAL = "normal"
 
+
 class UI(object):
 
     def __init__(self, application):
@@ -20,7 +21,9 @@ class UI(object):
         self.text_field = None
 
     def show(self):
-        """Метод, в котором отрисовываем окошко и что-то внутри"""
+        """
+        Метод, в котором отрисовываем окошко и что-то внутри
+        """
         self.gui = tkinter.Tk()
         self.gui.title(messages.TITLE)
         self.fill_frame()
@@ -32,18 +35,14 @@ class UI(object):
 
     def fill_frame(self):
         """
-        Функция отрисовывает начальное значание внутри клиента до того момента,
-        пока клиент не получит инфоррмацию от сервера (с актуальным счетом, случайным числом)
+        Метод отрисовывает начальное значание внутри клиента до того момента,
+        пока клиент не получит информацию от сервера (с актуальным счетом, случайным числом)
         """
-        # ниже поля класса идут c помощью self
         self.frame = tkinter.Frame(self.gui)
-
-        self.text_field1 = tkinter.Text(width=32, height=10)  # поле, в котором отрисовываем счёт игроков
+        self.text_field1 = tkinter.Text(width=32, height=10)  # поле, в котором отрисовывается счёт игроков
         self.text_field1.pack()
-        self.text_field1.insert(tkinter.END," ")
-
+        self.text_field1.insert(tkinter.END, " ")
         self.frame.pack()
-
         self.text_field2 = tkinter.Text(width=10, height=1)  # поле, в котором отрисовывается случайное число
         self.text_field2.insert(1.0, "Ваше число: ")
         self.text_field2.pack()
@@ -51,13 +50,14 @@ class UI(object):
         self.add_number_button = tkinter.Button(self.gui, text=messages.ADD_NUMBER, command=self.application.add_number)
         self.add_number_button.pack()
         self.add_number_button['state'] = 'disabled'
-        self.end_game_button = tkinter.Button(self.gui, text=messages.END_GAME, command=self.application.end_game_for_this_client)
+        self.end_game_button = tkinter.Button(self.gui, text=messages.END_GAME,
+                                              command=self.application.end_game_for_this_client)
         self.end_game_button.pack()
         self.end_game_button['state'] = 'disabled'
 
     def input_dialogs(self):
         """
-        Метод, в котором Гайдель показывал окошки simpledialog, с целью заполнения полей: username, host, port
+        Метод, в котором изначально показывались окошки simpledialog с целью заполнения полей: username, host, port
         """
         # self.gui.lower()
         # self.application.username = simpledialog.askstring(messages.USERNAME, messages.INPUT_USERNAME, parent=self.gui)
@@ -70,10 +70,11 @@ class UI(object):
         # if self.application.port is None:
         #     return False
         self.application.username = "player"+str(randint(1, 1000))
-        #! тут надо запретить одинаковые имена по идее!
+        self.gui.title(self.application.username)  # обновили название окошка, подписали именем юзера
+        # тут надо запретить одинаковые имена по идее
         self.application.host = "localhost"
         self.application.port = 5678
-        return True  # Если сюда дошли, то всё отрисовалось в этом методе норм
+        return True  # если сюда дошли, то всё отрисовалось в этом методе нормально
 
     def alert(self, title, message):
         """
@@ -84,10 +85,10 @@ class UI(object):
 
     def show_message(self, message):
         """
-        В этом методе мы перерисовываем окошко клиента, как только у нас появилось собщение
+        В этом методе перерисовываем окошко клиента, как только у нас появилось собщение
         Вызывается в конце метода application.receive()
         """
-        if not message.quit: # если игра ещё продолжается
+        if not message.quit:  # если игра ещё продолжается
             self.text_field1.delete(1.0, tkinter.END)
             for key, value in message.players_score.items():  # бежим по строкам мапы
                 self.text_field1.insert(tkinter.END, "Счёт " + str(key) + " = " + str(value)+'\n')
@@ -95,20 +96,20 @@ class UI(object):
             self.text_field2.delete(1.0, tkinter.END)
             self.text_field2.insert(tkinter.END, message.rnd_number)
 
-            print("message.username_last_player = "+ str(message.username_last_player))
+            print("message.username_last_player = " + str(message.username_last_player))
             print('self.application.username = ' + str(self.application.username))
             if message.username_current_player == self.application.username:  # Если в сообщении сказано,
-                                                                                # что текущий клиент должен ходить
+                # что текущий клиент должен ходить
                 self.add_number_button['state'] = 'normal'
                 self.end_game_button['state'] = 'normal'
         else:  # если сервер объявил о конце игры
             self.text_field1.delete(1.0, tkinter.END)
             self.text_field1.insert(tkinter.END, 'Отсортированные результаты игры\n')
-            sorted_players_score = sorted(message.players_score.items(), key=lambda kv: kv[1])  # получаем список кортежей отсортированных по значению по возрастанию
+            sorted_players_score = sorted(message.players_score.items(), key=lambda kv: kv[1])  # получаем список
+            # кортежей отсортированных по значению по возрастанию
             sorted_players_score.reverse()  # разворачиваем по убыванию
             for key, value in sorted_players_score:
                 self.text_field1.insert(tkinter.END, "Счёт " + str(key) + " = " + str(value) + '\n')
-
 
     def on_closing(self):
         self.application.exit()
